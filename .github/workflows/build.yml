@@ -1,0 +1,30 @@
+name: Gerar APK do Robo
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configurar Python Perfeito
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Instalar Ferramentas de Compilacao
+        run: |
+          sudo apt update
+          sudo apt install -y ccache automake libtool pkg-config python3-pip textwrap3
+          pip install --upgrade pip
+          pip install buildozer cython kivy
+
+      - name: Gerar Aplicativo (.apk)
+        run: |
+          buildozer android debug
+
+      - name: Enviar Arquivo APK Pronto
+        uses: actions/upload-artifact@v3
+        with:
+          name: aplicativo-robo-celular
+          path: bin/*.apk
